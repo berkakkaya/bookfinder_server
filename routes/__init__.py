@@ -9,7 +9,7 @@ blueprints: list[Blueprint] = [
     logon_routes.bp,
     token_routes.bp,
     book_recommendations.bp,
-    book_detail_fetching.bp,
+    book_data_fetching.bp,
 ]
 
 

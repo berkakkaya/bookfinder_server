@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify
 from services.database import db_provider
 from utils.flask_auth import login_required
 
@@ -31,7 +31,7 @@ def get_recommendations(user_id: str):
     ])
     
     def _convert_id_to_str(doc):
-        doc["_id"] = str(doc["id"])
+        doc["_id"] = str(doc["_id"])
         doc["id"] = str(doc["id"])
 
         return doc
