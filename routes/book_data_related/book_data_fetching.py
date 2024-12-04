@@ -3,7 +3,7 @@ from services.database import db_provider
 from utils.flask_auth import login_required
 
 
-bp = Blueprint("book_detail_related", __name__)
+bp = Blueprint("book_data_related", __name__)
 
 
 @bp.route("/books/<string:book_id>", methods=["GET"])
