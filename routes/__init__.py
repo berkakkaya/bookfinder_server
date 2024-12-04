@@ -1,0 +1,24 @@
+from flask import Flask, Blueprint
+from routes.auth_management import logon_routes
+from routes.auth_management import token_routes
+from routes.recommendation_algorithm import book_recommendations
+from routes.book_detail_related import book_detail_fetching
+
+
+blueprints: list[Blueprint] = [
+    logon_routes.bp,
+    token_routes.bp,
+    book_recommendations.bp,
+    book_detail_fetching.bp,
+]
+
+
+def register_blueprints(app: Flask):
+    for bp in blueprints:
+        app.register_blueprint(bp)
+
+
+__all__ = [
+    "blueprints",
+    "register_blueprints",
+]
