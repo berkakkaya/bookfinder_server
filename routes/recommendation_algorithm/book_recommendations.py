@@ -13,21 +13,23 @@ def get_recommendations(user_id: str):
             "$sample": {
                 "size": 10
             }
-        }, {
+        },
+        {
             "$match": {
                 "volumeInfo.maturityRating": {
                     "$ne": "MATURE"
                 }
             }
-        }, {
-            "$project": {
-                "_id": 1,
-                "id": 1,
-                "title": "$volumeInfo.title",
-                "subtitle": "$volumeInfo.subtitle",
-                "thumbnail": "$volumeInfo.imageLinks.thumbnail"
-            }
-        }
+        },
+        # {
+        #     "$project": {
+        #         "_id": 1,
+        #         "id": 1,
+        #         "title": "$volumeInfo.title",
+        #         "subtitle": "$volumeInfo.subtitle",
+        #         "thumbnail": "$volumeInfo.imageLinks.thumbnail"
+        #     }
+        # }
     ])
     
     def _convert_id_to_str(doc):
