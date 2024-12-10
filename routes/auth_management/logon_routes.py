@@ -36,8 +36,8 @@ def post_login_route():
     access_token = generate_access_token(str(db_user["_id"]))
 
     return jsonify({
-        "refresh_token": refresh_token,
-        "access_token": access_token
+        "refreshToken": refresh_token,
+        "accessToken": access_token
     }), 200
 
 
@@ -71,6 +71,6 @@ def post_register_route():
     access_token = generate_access_token(user_id)
 
     return jsonify({
-        "refresh_token": refresh_token,
-        "access_token": access_token
+        "refreshToken": refresh_token,
+        "accessToken": access_token
     }), 201
