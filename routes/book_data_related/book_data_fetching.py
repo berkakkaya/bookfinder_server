@@ -48,7 +48,9 @@ def search_books_route(user_id: str):
     if len(results) == 0:
         return jsonify({"error": "No books found"}), 404
 
-    return jsonify(results), 200
+    return jsonify({
+        "searchResults": results
+    }), 200
 
 
 @bp.route("/books/<string:book_id>", methods=["GET"])

@@ -39,4 +39,6 @@ def get_recommendations(user_id: str):
 
     result = list(map(_convert_id_to_str, result))
 
-    return jsonify(result), 200
+    return jsonify({
+        "recommendations": result
+    }), 200
