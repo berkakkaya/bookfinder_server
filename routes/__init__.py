@@ -1,9 +1,9 @@
 from flask import Flask, Blueprint
+
 from routes.auth_management import logon_routes
 from routes.auth_management import token_routes
-from routes.recommendation_algorithm import book_recommendations
 from routes.book_data_related import book_data_fetching
-
+from routes.recommendation_algorithm import book_recommendations
 
 blueprints: list[Blueprint] = [
     logon_routes.bp,

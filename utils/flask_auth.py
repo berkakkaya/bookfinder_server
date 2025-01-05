@@ -1,39 +1,41 @@
-from flask import request
 from functools import wraps
-from utils.token_management import validate_token
+
+from flask import request
+
 from models.tokens import TokenType
+from utils.token_management import validate_token
 
 
 def login_required(f):
     """Decorator function to check if the user is logged in or not.
 
-        If token check fails, it returns a ``401`` error.
-        Else, it resumes the handling of the request.
+    If token check fails, it returns a ``401`` error.
+    Else, it resumes the handling of the request.
 
-        Also, ``user_id`` parameter is passed to the function if token check is successful.
-        You can check who the user is by using this parameter.
+    Also, ``user_id`` parameter is passed to the function if token check is successful.
+    You can check who the user is by using this parameter.
 
-        Here is an example of how you can use this decorator:
+    Here is an example of how you can use this decorator:
 
-        ```python
-        @app.route("/protected", methods=["GET"])
-        @login_required # <-- Use the decorator here
-        def protected_route(user_id: str):
-            return {
-                "message": f"Hello, user with id {user_id}!"
-            }, 200
-        ```
+    ```python
+    @app.route("/protected", methods=["GET"])
+    @login_required # <-- Use the decorator here
+    def protected_route(user_id: str):
+        return {
+            "message": f"Hello, user with id {user_id}!"
+        }, 200
+    ```
 
-        Parameters
-        ----------
-        f : function
-            The function that handles the request
+    Parameters
+    ----------
+    f : function
+        The function that handles the request
 
-        Returns
-        -------
-        function
-            The function that handles the request with the token check implemented
-        """
+    Returns
+    -------
+    function
+        The function that handles the request with the token check implemented
+    """
 
     @wraps(f)
     def controller_function(*args, **kwargs):

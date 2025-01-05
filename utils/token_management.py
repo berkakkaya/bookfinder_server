@@ -1,10 +1,15 @@
-import jwt
 from datetime import datetime, timezone
 from datetime import timedelta
 from os import environ
+
+import jwt
+
 from models.tokens import UserToken, TokenType
 
 _TOKEN_KEY = environ.get("TOKEN_KEY")
+
+assert _TOKEN_KEY is not None, "TOKEN_KEY environment variable must be set"
+
 
 def generate_refresh_token(user_id: str) -> str:
     """Generate a refresh token for the user
