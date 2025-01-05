@@ -1,3 +1,5 @@
+from bson import ObjectId
+from bson.errors import InvalidId
 from flask import Blueprint, jsonify, request
 
 from services.database import db_provider
@@ -30,6 +32,7 @@ def search_books_route(user_id: str):
         {
             "$project": {
                 "bookId": "$_id",
+                "_id": 0,
                 "title": "$volumeInfo.title",
                 "thumbnail": "$volumeInfo.imageLinks.thumbnail"
             }
@@ -51,7 +54,10 @@ def search_books_route(user_id: str):
 @bp.route("/books/<string:book_id>", methods=["GET"])
 @login_required
 def get_book_details_route(book_id: str, user_id: str):
-    result = db_provider.col_raw_book_datas.find_one({"id": book_id})
+    try:
+        result = db_provider.col_raw_book_datas.find_one({"_id": ObjectId(book_id)})
+    except InvalidId:
+        return jsonify({"error": "Invalid book ID"}), 400
 
     if result is None:
         return jsonify({"error": "Book not found"}), 404

@@ -24,7 +24,8 @@ def get_recommendations(user_id: str):
         },
         {
             "$project": {
-                "_id": 1,
+                "bookId": "$_id",
+                "_id": 0,
                 "title": "$volumeInfo.title",
                 "authors": "$volumeInfo.authors",
                 "thumbnail": "$volumeInfo.imageLinks.thumbnail"
@@ -33,7 +34,7 @@ def get_recommendations(user_id: str):
     ])
 
     def _convert_id_to_str(doc):
-        doc["_id"] = str(doc["_id"])
+        doc["bookId"] = str(doc["bookId"])
         return doc
 
     result = list(map(_convert_id_to_str, result))
