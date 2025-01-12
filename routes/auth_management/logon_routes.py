@@ -58,7 +58,8 @@ def post_register_route():
         result = db_provider.col_users.insert_one({
             "nameSurname": name_surname,
             "email": email,
-            "password": hash_password(password)
+            "password": hash_password(password),
+            "followedUsers": [],
         })
     except DuplicateKeyError:
         return jsonify({"error": "User with same email already exists"}), 409
