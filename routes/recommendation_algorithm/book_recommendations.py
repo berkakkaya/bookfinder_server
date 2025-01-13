@@ -31,6 +31,7 @@ def get_recommendations(user_id: str):
                 "_id": 0,
                 "title": "$volumeInfo.title",
                 "authors": "$volumeInfo.authors",
+                "description": "$volumeInfo.description",
                 "thumbnail": "$volumeInfo.imageLinks.thumbnail"
             }
         }
