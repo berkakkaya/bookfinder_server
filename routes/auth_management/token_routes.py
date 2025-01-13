@@ -1,7 +1,7 @@
 from flask import Blueprint, request
-from utils.token_management import validate_token, generate_access_token
-from models.tokens import TokenType
 
+from models.tokens import TokenType
+from utils.token_management import validate_token, generate_access_token
 
 bp = Blueprint("token_routes", __name__)
 

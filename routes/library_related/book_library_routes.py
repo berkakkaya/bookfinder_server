@@ -1,9 +1,10 @@
+from datetime import datetime
+
 from bson import ObjectId
 from flask import Blueprint, request, jsonify
 
 from services.database import db_provider
 from utils.flask_auth import login_required
-from datetime import datetime
 
 bp = Blueprint('book_library', __name__)
 
@@ -181,8 +182,6 @@ def get_library(user_id: str, library_id: str):
 
     for book in library['books']:
         book['bookId'] = str(book['bookId'])
-
-    print(library)
 
     return jsonify({
         'library': library

@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify
+from pymongo.errors import DuplicateKeyError
+
 from services.database import db_provider
 from utils.pw_ops import verify_password, hash_password
 from utils.token_management import generate_refresh_token, generate_access_token
-from pymongo.errors import DuplicateKeyError
-
 
 bp = Blueprint("logon_routes", __name__)
+
 
 @bp.route("/login", methods=["POST"])
 def post_login_route():

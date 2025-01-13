@@ -1,9 +1,9 @@
 from bson import ObjectId
 from bson.errors import InvalidId
 from flask import Blueprint, jsonify, request
-from utils.flask_auth import login_required
-from services.database import db_provider
 
+from services.database import db_provider
+from utils.flask_auth import login_required
 
 bp = Blueprint("user_data_fetching", __name__)
 
