@@ -64,6 +64,17 @@ def post_register_route():
     except DuplicateKeyError:
         return jsonify({"error": "User with same email already exists"}), 409
 
+    # Try to create liked books list for the user
+    try:
+        db_provider.col_book_libraries.insert_one({
+            "authorId": result.inserted_id,
+            "title": "_likedBooks",
+            "books": [],
+            "isPrivate": True
+        })
+    except DuplicateKeyError:
+        return jsonify({"error": "User with same email already exists"}), 409
+
     # Get created user's id
     user_id = str(result.inserted_id)
 
