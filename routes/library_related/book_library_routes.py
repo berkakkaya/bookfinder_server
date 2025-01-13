@@ -90,7 +90,7 @@ def get_libraries_contain_data(user_id: str, book_id: str):
         doc['bookListId'] = str(doc['bookListId'])
         doc['authorId'] = str(doc['authorId'])
         doc['bookCount'] = len(doc['books'])
-        doc['containsBook'] = book_id in doc['books']
+        doc['containsBook'] = ObjectId(book_id) in doc['books']
 
         doc.pop('books')
 
@@ -128,6 +128,14 @@ def get_library(user_id: str, library_id: str):
         }
     ]
 
+    if library_id == "_likedBooks":
+        aggregation_pipeline[0] = {
+            '$match': {
+                'authorId': ObjectId(user_id),
+                'title': '_likedBooks'
+            }
+        }
+
     library_results = list(db_provider.col_book_libraries.aggregate(aggregation_pipeline))
 
     if len(library_results) == 0:
@@ -157,7 +165,7 @@ def get_library(user_id: str, library_id: str):
         }, {
             '$project': {
                 '_id': 0,
-                'bookId': '$_id',
+                'bookId': '$bookDetails._id',
                 'title': '$bookDetails.volumeInfo.title',
                 'authors': '$bookDetails.volumeInfo.authors',
                 'thumbnailUrl': '$bookDetails.volumeInfo.imageLinks.thumbnail'
@@ -173,6 +181,8 @@ def get_library(user_id: str, library_id: str):
 
     for book in library['books']:
         book['bookId'] = str(book['bookId'])
+
+    print(library)
 
     return jsonify({
         'library': library
@@ -191,7 +201,7 @@ def create_library(user_id: str):
         return jsonify({'error': 'Parameters named authorId, title and isPrivate are required'}), 400
 
     if title == '_likedBooks':
-        return jsonify({'error': 'Invalid library name'}), 400
+        return jsonify({'error': 'Library name cannot be _likedBooks'}), 400
 
     new_library = {
         'authorId': ObjectId(user_id),
@@ -224,6 +234,9 @@ def create_library(user_id: str):
 @bp.route('/libraries/<string:library_id>', methods=['PATCH'])
 @login_required
 def update_library(user_id: str, library_id: str):
+    if library_id == '_likedBooks':
+        return jsonify({'error': 'Cannot update liked books library'}), 400
+
     if not ObjectId.is_valid(library_id):
         return jsonify({'error': 'Invalid libraryId'}), 400
 
@@ -273,6 +286,9 @@ def update_library(user_id: str, library_id: str):
 @bp.route('/libraries/<string:library_id>', methods=['DELETE'])
 @login_required
 def delete_library(user_id: str, library_id: str):
+    if library_id == '_likedBooks':
+        return jsonify({'error': 'Cannot delete liked books library'}), 400
+
     if not ObjectId.is_valid(library_id):
         return jsonify({'error': 'Invalid libraryId'}), 400
 
@@ -290,7 +306,7 @@ def delete_library(user_id: str, library_id: str):
 @bp.route('/libraries/<string:library_id>/books', methods=['POST'])
 @login_required
 def add_book_to_library(user_id: str, library_id: str):
-    if not ObjectId.is_valid(library_id):
+    if library_id != '_likedBooks' and not ObjectId.is_valid(library_id):
         return jsonify({'error': 'Invalid libraryId'}), 400
 
     data = request.json
@@ -299,14 +315,24 @@ def add_book_to_library(user_id: str, library_id: str):
     if not ObjectId.is_valid(book_id):
         return jsonify({'error': 'Invalid bookId'}), 400
 
-    result = db_provider.col_book_libraries.update_one({
-        '_id': ObjectId(library_id),
-        'authorId': ObjectId(user_id)
-    }, {
-        '$addToSet': {
-            'books': ObjectId(book_id)
-        }
-    })
+    if library_id != "_likedBooks":
+        result = db_provider.col_book_libraries.update_one({
+            '_id': ObjectId(library_id),
+            'authorId': ObjectId(user_id)
+        }, {
+            '$addToSet': {
+                'books': ObjectId(book_id)
+            }
+        })
+    else:
+        result = db_provider.col_book_libraries.update_one({
+            'authorId': ObjectId(user_id),
+            'title': '_likedBooks'
+        }, {
+            '$addToSet': {
+                'books': ObjectId(book_id)
+            }
+        })
 
     if result.matched_count == 0:
         return jsonify({'error': 'No library found'}), 404
@@ -317,7 +343,7 @@ def add_book_to_library(user_id: str, library_id: str):
 @bp.route('/libraries/<string:library_id>/books', methods=['DELETE'])
 @login_required
 def remove_book_from_library(user_id: str, library_id: str):
-    if not ObjectId.is_valid(library_id):
+    if library_id != '_likedBooks' and not ObjectId.is_valid(library_id):
         return jsonify({'error': 'Invalid libraryId'}), 400
 
     data = request.json
@@ -326,14 +352,24 @@ def remove_book_from_library(user_id: str, library_id: str):
     if not ObjectId.is_valid(book_id):
         return jsonify({'error': 'Invalid bookId'}), 400
 
-    result = db_provider.col_book_libraries.update_one({
-        '_id': ObjectId(library_id),
-        'authorId': ObjectId(user_id)
-    }, {
-        '$pull': {
-            'books': ObjectId(book_id)
-        }
-    })
+    if library_id != "_likedBooks":
+        result = db_provider.col_book_libraries.update_one({
+            '_id': ObjectId(library_id),
+            'authorId': ObjectId(user_id)
+        }, {
+            '$pull': {
+                'books': ObjectId(book_id)
+            }
+        })
+    else:
+        result = db_provider.col_book_libraries.update_one({
+            'authorId': ObjectId(user_id),
+            'title': '_likedBooks'
+        }, {
+            '$pull': {
+                'books': ObjectId(book_id)
+            }
+        })
 
     if result.matched_count == 0:
         return jsonify({'error': 'No library found'}), 404
