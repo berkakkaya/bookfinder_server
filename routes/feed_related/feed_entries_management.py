@@ -1,8 +1,8 @@
 from bson import ObjectId
 from flask import Blueprint, request, jsonify
+
 from services.database import db_provider
 from utils.flask_auth import login_required
-
 
 bp = Blueprint('feed_entries_management', __name__)
 
@@ -33,6 +33,16 @@ def get_feed_entries(user_id: str):
         "userId": {"$in": follow_list}
     })
 
+    def _convert_object_id_to_string(doc):
+        doc['_id'] = str(doc['_id'])
+        doc['issuerUserId'] = str(doc['issuerUserId'])
+        doc['issuedAt'] = doc['issuedAt'].isoformat()
+
+        if doc['type'] == 'bookListPublish':
+            doc['bookListId'] = str(doc['bookListId'])
+
+        return doc
+
     return jsonify({
-        "feed": list(feed_entries)
+        "feed": list(map(_convert_object_id_to_string, feed_entries))
     }), 200

@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 
 from services.database import db_provider
 from utils.flask_auth import login_required
+from datetime import datetime
 
 bp = Blueprint('book_library', __name__)
 
@@ -201,6 +202,20 @@ def create_library(user_id: str):
 
     result = db_provider.col_book_libraries.insert_one(new_library)
 
+    if not is_private:
+        user = db_provider.col_users.find_one({'_id': ObjectId(user_id)})
+
+        db_provider.col_feed.insert_one({
+            'issuerUserId': ObjectId(user_id),
+            'issuerNameSurname': user['nameSurname'],
+            'issuedAt': datetime.now(),
+            'type': 'bookListPublish',
+            'details': {
+                'bookListId': result.inserted_id,
+                'bookListName': title
+            }
+        })
+
     return jsonify({
         'libraryId': str(result.inserted_id)
     }), 201
@@ -237,6 +252,20 @@ def update_library(user_id: str, library_id: str):
 
     if result.matched_count == 0:
         return jsonify({'error': 'No library found'}), 404
+
+    if not is_private:
+        user = db_provider.col_users.find_one({'_id': ObjectId(user_id)})
+
+        db_provider.col_feed.insert_one({
+            'issuerUserId': ObjectId(user_id),
+            'issuerNameSurname': user['nameSurname'],
+            'issuedAt': datetime.now(),
+            'type': 'bookListPublish',
+            'details': {
+                'bookListId': result.inserted_id,
+                'bookListName': title
+            }
+        })
 
     return jsonify({'message': 'Updated'}), 200
 

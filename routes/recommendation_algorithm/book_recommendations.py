@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from services.database import db_provider
 from utils.flask_auth import login_required
@@ -9,6 +9,9 @@ bp = Blueprint("book_recommendations", __name__)
 @bp.route("/recommendations", methods=["GET"])
 @login_required
 def get_recommendations(user_id: str):
+    # TODO: Overhaul this function to actually provide recommendations based on user's history
+    param_category_filter = request.args.get("category")
+
     result = db_provider.col_raw_book_datas.aggregate([
         {
             "$sample": {
