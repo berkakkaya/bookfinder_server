@@ -85,22 +85,22 @@ def patch_book_track_datas(user_id: str):
     if not ObjectId.is_valid(book_id):
         return jsonify({'error': 'Invalid bookId'}), 400
 
-    if new_status is None:
+    if new_status is not None:
         if new_status not in ['willRead', 'reading', 'completed', 'dropped']:
             return jsonify({'error': 'Invalid status argument'}), 400
 
-        db_provider.col_book_tracking_statuses.delete_one({
+        db_provider.col_book_tracking_statuses.update_one({
             'ownerUserId': ObjectId(user_id),
-            'bookId': ObjectId(book_id)
-        })
+            'bookId': ObjectId(data.get('bookId'))
+        }, {
+            '$set': {'status': new_status}
+        }, upsert=True)
 
-        return jsonify({'message': 'Deleted'}), 200
+        return jsonify({'message': 'Updated'}), 200
 
-    db_provider.col_book_tracking_statuses.update_one({
+    db_provider.col_book_tracking_statuses.delete_one({
         'ownerUserId': ObjectId(user_id),
         'bookId': ObjectId(data.get('bookId'))
-    }, {
-        '$set': {'status': new_status}
-    }, upsert=True)
+    })
 
-    return jsonify({'message': 'Updated'}), 200
+    return jsonify({'message': 'Deleted'}), 200
