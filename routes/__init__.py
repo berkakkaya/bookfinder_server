@@ -6,6 +6,7 @@ from routes.book_data_related import book_data_fetching
 from routes.recommendation_algorithm import book_recommendations
 from routes.user_management import user_data_fetching
 from routes.feed_related import feed_entries_management
+from routes.library_related import book_tracking_routes
 
 blueprints: list[Blueprint] = [
     logon_routes.bp,
@@ -14,6 +15,7 @@ blueprints: list[Blueprint] = [
     book_data_fetching.bp,
     user_data_fetching.bp,
     feed_entries_management.bp,
+    book_tracking_routes.bp,
 ]
 
 
