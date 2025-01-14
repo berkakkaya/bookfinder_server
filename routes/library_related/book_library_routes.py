@@ -5,6 +5,7 @@ from flask import Blueprint, request, jsonify
 
 from services.database import db_provider
 from utils.flask_auth import login_required
+from utils import pool_ops
 
 bp = Blueprint('book_library', __name__)
 
@@ -332,6 +333,9 @@ def add_book_to_library(user_id: str, library_id: str):
                 'books': ObjectId(book_id)
             }
         })
+
+        # Update user's pool based on the liked book's category
+        pool_ops.add_weight_to_category(user_id, book_id)
 
     if result.matched_count == 0:
         return jsonify({'error': 'No library found'}), 404
