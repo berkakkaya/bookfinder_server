@@ -15,6 +15,10 @@ def get_recommendations(user_id: str):
     filters = {
         "volumeInfo.maturityRating": {
             "$ne": "MATURE"
+        },
+        "volumeInfo.description": {
+            "$exists": True,
+            "$ne": ""
         }
     }
 
