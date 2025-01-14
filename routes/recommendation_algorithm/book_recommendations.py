@@ -12,17 +12,22 @@ def get_recommendations(user_id: str):
     # TODO: Overhaul this function to actually provide recommendations based on user's history
     param_category_filter = request.args.get("category")
 
+    filters = {
+        "volumeInfo.maturityRating": {
+            "$ne": "MATURE"
+        }
+    }
+
+    if param_category_filter is not None:
+        filters["category"] = param_category_filter
+
     result = db_provider.col_raw_book_datas.aggregate([
+        {
+            "$match": filters
+        },
         {
             "$sample": {
                 "size": 10
-            }
-        },
-        {
-            "$match": {
-                "volumeInfo.maturityRating": {
-                    "$ne": "MATURE"
-                }
             }
         },
         {
