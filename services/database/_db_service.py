@@ -14,6 +14,7 @@ class DatabaseServiceProvider:
     col_book_libraries: Collection
     col_book_tracking_statuses: Collection
     col_feed: Collection
+    col_pools: Collection
 
     def __init__(self):
         mongo_url = environ.get("MONGO_URL")
@@ -29,3 +30,4 @@ class DatabaseServiceProvider:
         self.col_book_libraries = self._db["bookLibraries"]
         self.col_book_tracking_statuses = self._db["bookTrackingStatuses"]
         self.col_feed = self._db["feed"]
+        self.col_pools = self._db["pools"]
